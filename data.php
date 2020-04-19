@@ -29,8 +29,9 @@ function getConfirmados_x_Continente_Diarios() {
     FROM confirmados 
     INNER JOIN continentes ON confirmados.Continent = continentes.codigo
     GROUP BY continentes.nombre, confirmados.Date";
-    $result = getDataset($sql);
     
+    $result = getDataset($sql);
+
     if ($result->num_rows > 0) {
         // output data of each row
 
@@ -67,7 +68,6 @@ function getConfirmados_x_Continente_Diarios() {
     } else {
         echo "0 results";
     }
-
 }
 
 
@@ -78,4 +78,5 @@ function update_keypair($arr, $key, $val)
    else $arr[$key][] = $val;
    return $arr;
 }
+
 ?> 

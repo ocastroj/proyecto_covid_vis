@@ -13,82 +13,75 @@
         <link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-<script src="code/highcharts.js"></script>
-<script src="code/modules/series-label.js"></script>
-<script src="code/modules/exporting.js"></script>
-<script src="code/modules/export-data.js"></script>
-<script src="code/modules/accessibility.js"></script>
 
-<figure class="highcharts-figure">
-    <div id="container"></div>
-    <p class="highcharts-description">
-        Basic line chart showing trends in a dataset. This chart includes the
-        <code>series-label</code> module, which adds a label to each line for
-        enhanced readability.
-    </p>
-</figure>
+        <script src="code/highcharts.js"></script>
+        <script src="code/modules/series-label.js"></script>
+        <script src="code/modules/exporting.js"></script>
+        <script src="code/modules/export-data.js"></script>
+        <script src="code/modules/accessibility.js"></script>
+
+        <figure class="highcharts-figure">
+            <div id="container"></div>
+        </figure>
 
 
+        <script type="text/javascript">
+            Highcharts.chart('container', {
 
+                title: {
+                    text: 'Números de casos confirmados por región'
+                },
 
+                subtitle: {
+                    text: 'Fuente: Jonh Hopkins Univesity'
+                },
 
-		<script type="text/javascript">
-Highcharts.chart('container', {
+                yAxis: {
+                    title: {
+                        text: 'Casos'
+                    }
+                },
 
-    title: {
-        text: 'Solar Employment Growth by Sector, 2010-2016'
-    },
+                xAxis: {
+                    accessibility: {
+                        rangeDescription: 'Range: 2010 to 2017'
+                    },
+                    type: 'datetime'
+                },
 
-    subtitle: {
-        text: 'Source: thesolarfoundation.com'
-    },
-
-    yAxis: {
-        title: {
-            text: 'Casos'
-        }
-    },
-
-    xAxis: {
-        accessibility: {
-            rangeDescription: 'Range: 2010 to 2017'
-        },
-        type: 'datetime'
-    },
-
-    legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'middle'
-    },
-
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            }
-        }
-    },
-
-    series: <?=$json_data?>
-    ,
-
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
                 legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                }
-            }
-        }]
-    }
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
 
-});
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        }
+                    }
+                },
+
+                series: <?=$json_data?>
+                ,
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+
+            });
 		</script>
 	</body>
 </html>
