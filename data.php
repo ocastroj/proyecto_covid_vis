@@ -94,4 +94,70 @@ function getRecuperados_x_Continente_Diarios() {
 }
 
 
+// **************************
+// CALCULO DE DATOS PARA GRAFICOS PIE
+// **************************
+
+
+// Retorna un dataset con los casos por pais acumulado
+function getDatos_x_Pais_Acumulado($query) {
+
+    $result = getDataset($query);
+
+    if ($result->num_rows > 0) {
+
+        $json = array();
+        while($row = $result->fetch_assoc()) {
+
+            $y = round((intval($row['Sub']) * 100) / intval($row['Total']),2);
+
+            $json[] = array(
+                'name' => $row['Country'], 
+                'y' => $y
+            );
+        }
+
+        $json2 = array(
+            'name' => 'Confirmados',
+            'data' => $json
+        );
+
+        $json3 = array(
+            $json2
+        );
+
+        return json_encode($json3);
+
+    } else {
+        echo "0 results";
+    }
+}
+
+function getConfirmados_x_Pais_Acumulado() {
+    $sql = "SELECT Country, SUM(Cases) As Sub, (SELECT SUM(Cases) FROM confirmados) As Total
+    FROM confirmados
+    GROUP BY country
+    ORDER BY Sub DESC
+    LIMIT 6";
+    return getDatos_x_Pais_Acumulado($sql);
+}
+
+function getFallecidos_x_Pais_Acumulado() {
+    $sql = "SELECT Country, SUM(Cases) As Sub, (SELECT SUM(Cases) FROM fallecidos) As Total
+    FROM fallecidos
+    GROUP BY country
+    ORDER BY Sub DESC
+    LIMIT 6";
+    return getDatos_x_Pais_Acumulado($sql);
+}
+
+function getRecuperados_x_Pais_Acumulado() {
+    $sql = "SELECT Country, SUM(Cases) As Sub, (SELECT SUM(Cases) FROM recuperados) As Total
+    FROM recuperados
+    GROUP BY country
+    ORDER BY Sub DESC
+    LIMIT 6";
+    return getDatos_x_Pais_Acumulado($sql);
+}
+
 ?> 
