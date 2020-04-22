@@ -25,10 +25,24 @@ function getDataset($query){
 }
 
 
+// Obtenemos la fecha mas reciendo de datos
+function getRecentDate() {
+    $sql = "SELECT confirmados.Date
+    FROM confirmados
+    ORDER BY Date DESC
+    LIMIT 1";
 
-// **************************
-// CALCULO DE DATOS PARA GRAFICOS DE LINEAS
-// **************************
+    $result = getDataset($sql);
+
+    if ($result->num_rows > 0){
+        while($row = $result->fetch_assoc()) {
+            return($row['Date']);
+        }
+    }
+    else {
+        echo "No date";
+    }
+}
 
 // Agrega un elemento al array de valores si la llave existe y si no, crea una nueva key y elemento
 function update_keypair($arr, $key, $val)
@@ -37,6 +51,10 @@ function update_keypair($arr, $key, $val)
    else $arr[$key][] = $val;
    return $arr;
 }
+
+// **************************
+// CALCULO DE DATOS PARA GRAFICOS DE LINEAS
+// **************************
 
 
 // Retorna un dataset con los casos  por continente por dia
@@ -134,8 +152,11 @@ function getDatos_x_Pais_Acumulado($query) {
 }
 
 function getConfirmados_x_Pais_Acumulado() {
-    $sql = "SELECT Country, SUM(Cases) As Sub, (SELECT SUM(Cases) FROM confirmados) As Total
+    $date = getRecentDate();
+    $sql = "SELECT Country, SUM(Cases) As Sub, 
+    (SELECT SUM(Cases) FROM confirmados WHERE confirmados.Date = '$date') As Total
     FROM confirmados
+    WHERE confirmados.Date = '$date'
     GROUP BY country
     ORDER BY Sub DESC
     LIMIT 6";
@@ -143,8 +164,11 @@ function getConfirmados_x_Pais_Acumulado() {
 }
 
 function getFallecidos_x_Pais_Acumulado() {
-    $sql = "SELECT Country, SUM(Cases) As Sub, (SELECT SUM(Cases) FROM fallecidos) As Total
+    $date = getRecentDate();
+    $sql = "SELECT Country, SUM(Cases) As Sub, 
+    (SELECT SUM(Cases) FROM fallecidos WHERE fallecidos.Date = '$date') As Total
     FROM fallecidos
+    WHERE fallecidos.Date = '$date'
     GROUP BY country
     ORDER BY Sub DESC
     LIMIT 6";
@@ -152,12 +176,64 @@ function getFallecidos_x_Pais_Acumulado() {
 }
 
 function getRecuperados_x_Pais_Acumulado() {
-    $sql = "SELECT Country, SUM(Cases) As Sub, (SELECT SUM(Cases) FROM recuperados) As Total
+    $date = getRecentDate();
+    $sql = "SELECT Country, SUM(Cases) As Sub, 
+    (SELECT SUM(Cases) FROM recuperados WHERE recuperados.Date = '$date') As Total
     FROM recuperados
+    WHERE recuperados.Date = '$date'
     GROUP BY country
     ORDER BY Sub DESC
     LIMIT 6";
     return getDatos_x_Pais_Acumulado($sql);
+}
+
+
+// **************************
+// CALCULO DE DATOS PARA GRAFICO TREEMAP
+// **************************
+
+function getAcumulados_Region_Pais_Estados() {
+    $date = getRecentDate();
+    $sql = "SELECT continentes.nombre AS Continent, confirmados.Country AS Country, 
+    confirmados.Cases AS Confirmed,
+    (SELECT fallecidos.Cases
+     FROM fallecidos 
+     WHERE confirmados.Country = fallecidos.Country AND
+     fallecidos.Date = '$date'
+    ) AS Deceased,
+    (SELECT recuperados.Cases
+     FROM recuperados 
+     WHERE confirmados.Country = recuperados.Country AND
+     recuperados.Date = '$date'
+    ) AS Recovered
+        FROM confirmados 
+        INNER JOIN continentes ON confirmados.Continent = continentes.codigo
+        WHERE confirmados.Date = '$date'
+        GROUP BY continentes.nombre, confirmados.Country";
+
+    $result = getDataset($sql);
+
+    if ($result->num_rows > 0) {
+
+        $json = array();
+        while($row = $result->fetch_assoc()) {
+            $region = $row['Continent'];
+            $country = $row['Country'];
+            $datos = array(
+                $country => array (
+                    'Confirmados' => intval($row['Confirmed']),
+                    'Fallecidos' => intval($row['Deceased']),
+                    'Recuperados' => intval($row['Recovered'])
+                )
+            );
+
+            $json = update_keypair($json, $region, $datos);
+        }
+
+        return json_encode($json);
+    } else {
+        echo "No results";
+    }
 }
 
 ?> 
