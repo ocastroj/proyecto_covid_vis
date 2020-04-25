@@ -58,8 +58,6 @@
 
 
         <script type="text/javascript">
-          
-
             var points = [],
             regionP,
             regionVal,

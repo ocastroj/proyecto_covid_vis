@@ -1,15 +1,18 @@
 <?php
   include('data.php');
 
-  // Obtenemos los datasets para los graficos de linea
+  // Datasets para los graficos de linea
   $line_confirmados_data = getConfirmados_x_Continente_Diarios();
   $line_fallecidos_data = getFallecidos_x_Continente_Diarios();
   $line_recuperados_data = getRecuperados_x_Continente_Diarios();
 
-  // Obtenemos los datasets para los graficos de pie
+  // Datasets para los graficos de pie
   $pie_confirmados_data = getConfirmados_x_Pais_Acumulado();
   $pie_fallecidos_data = getFallecidos_x_Pais_Acumulado();
   $pie_recuperados_data = getRecuperados_x_Pais_Acumulado();
+
+  // Datoset para Treemap
+  $treemap_regiones = getAcumulados_Region_Pais_Estados();
 
 ?>
 
@@ -31,13 +34,15 @@
         <script src="code/modules/exporting.js"></script>
         <script src="code/modules/export-data.js"></script>
         <script src="code/modules/accessibility.js"></script>
+        <script src="/code/modules/heatmap.js"></script>
+        <script src="/code/modules/treemap.js"></script>
         <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
         <section class="section">
             <div class="container">
 
+                <!-- GRAFICOS DE LINEA -->
                 <div class="columns">
-
                     <div class="column">
                         <figure class="highcharts-figure">
                             <div id="line-confirmados-region"></div>
@@ -58,6 +63,7 @@
 
                 </div>
 
+                <!-- GRAFICOS DE PIE -->
                 <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure-pie">
@@ -77,12 +83,28 @@
                         </figure>
                     </div> 
                 </div>   
+
+
+                <!-- TREEMAP REGIONES -->
+                <div class="columns">
+                    <div class="column">
+                        <figure class="highcharts-figure">
+                            <div id="treemap-regiones"></div>
+                        </figure>
+                    </div> 
+                </div>  
+
             </div>
         </section>
 
 
 
         <script type="text/javascript">
+
+            // ************************************
+            // LINEA CONFIRMADOS REGION
+            // ************************************
+
             Highcharts.chart('line-confirmados-region', {
 
                 title: {
@@ -141,6 +163,11 @@
             });
 
 
+
+            // ************************************
+            // LINEA FALLECIDOS REGION
+            // ************************************
+
             Highcharts.chart('line-fallecidos-region', {
 
                 title: {
@@ -198,6 +225,9 @@
 
             });
 
+            // ************************************
+            // LINEA RECUPERADOS REGION
+            // ************************************
 
             Highcharts.chart('line-recuperados-region', {
 
@@ -256,6 +286,11 @@
 
             });
 
+
+            // ************************************
+            // PIE CONFIRMADOS PAISES
+            // ************************************            
+
             // Make monochrome colors
             var pieColors = (function () {
             var colors = [],
@@ -309,7 +344,11 @@
             series: <?=$pie_confirmados_data?>
             });
 
-        
+
+            // ************************************
+            // PIE FALLECIDOS PAISES
+            // ************************************    
+
             Highcharts.chart('pie-fallecidos-region', {
                 chart: {
                     plotBackgroundColor: null,
@@ -348,6 +387,11 @@
                 series: <?=$pie_fallecidos_data?>
             });
 
+
+            // ************************************
+            // PIE RECUPERADOS PAISES
+            // ************************************    
+
             Highcharts.chart('pie-recuperados-region', {
                 chart: {
                     plotBackgroundColor: null,
@@ -385,6 +429,107 @@
                 },
                 series: <?=$pie_recuperados_data?>
             });
+
+
+            // ************************************
+            // TREEMAP REGIONES
+            // ************************************    
+            var points = [],
+            regionP,
+            regionVal,
+            regionI = 0,
+            countryP,
+            countryI,
+            causeP,
+            causeI,
+            region,
+            country,
+            cause,
+            causeName = {
+                'Confirmados': '# Confirmados',
+                'Fallecidos': '# Fallecidos',
+                'Recuperados': '# Recuperados'
+            };
+
+            var countryCounter;
+
+            data = <?=$treemap_regiones?>
+
+            for (region in data) {
+                //console.log(region);
+                if (data.hasOwnProperty(region)) {
+                    regionVal = 0;
+                    regionP = {
+                        id: 'id_' + regionI,
+                        name: region,
+                        color: Highcharts.getOptions().colors[regionI]
+                    };
+
+                    countryI = 0;
+
+                    for (let countries in data[region]) {
+
+                        
+                        for (country in data[region][countries]) {
+
+                            countryP = {
+                                id: regionP.id + '_' + countryI,
+                                name: country,
+                                parent: regionP.id
+                            };
+
+                            points.push(countryP);
+                            causeI = 0;
+
+                            for (cause in data[region][countries][country]) {  
+                                causeP = {
+                                    id: countryP.id + '_' + causeI,
+                                    name: causeName[cause],
+                                    parent: countryP.id,
+                                    value: Math.round(+data[region][countries][country][cause])
+                                };
+                                regionVal += causeP.value;
+                                points.push(causeP);
+                                causeI = causeI + 1;
+                                console.log(causeP);
+                            }
+                            countryI = countryI + 1;
+                        }
+                    
+                    }
+                    regionP.value = Math.round(regionVal / countryI);
+                    points.push(regionP);
+                    regionI = regionI + 1;
+                }
+            }
+
+            Highcharts.chart('treemap-regiones', {
+            series: [{
+                type: 'treemap',
+                layoutAlgorithm: 'squarified',
+                allowDrillToNode: true,
+                animationLimit: 1000,
+                dataLabels: {
+                enabled: false
+                },
+                levelIsConstant: false,
+                levels: [{
+                level: 1,
+                dataLabels: {
+                    enabled: true
+                },
+                borderWidth: 3
+                }],
+                data: points
+            }],
+            subtitle: {
+                text: 'Haga click sobre los graficos para hacer drilldown.'
+            },
+            title: {
+                text: 'Cifras de COVID-19 en el Mundo'
+            }
+            });
+
 
 
 		</script>
