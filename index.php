@@ -42,6 +42,7 @@
             <div class="container">
 
                 <!-- GRAFICOS DE LINEA -->
+                <h1>Graficos de Linea</h1>
                 <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure">
@@ -64,6 +65,7 @@
                 </div>
 
                 <!-- GRAFICOS DE PIE -->
+                <h1>Graficos de Pie</h1>
                 <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure-pie">
@@ -86,6 +88,7 @@
 
 
                 <!-- TREEMAP REGIONES -->
+                <h1>Grafico de Treemap</h1>
                 <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure">

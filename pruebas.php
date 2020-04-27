@@ -2,7 +2,7 @@
   include('data.php');
 
   // Obtenemos los datasets para los graficos de pie
-  $data = getAcumulados_Region_Pais_Estados();
+  $data = getTasa_Letalidad_Paises();
   
   //echo($data);
 
@@ -58,101 +58,68 @@
 
 
         <script type="text/javascript">
-            var points = [],
-            regionP,
-            regionVal,
-            regionI = 0,
-            countryP,
-            countryI,
-            causeP,
-            causeI,
-            region,
-            country,
-            cause,
-            causeName = {
-                'Confirmados': '# Confirmados',
-                'Fallecidos': '# Fallecidos',
-                'Recuperados': '# Recuperados'
-            };
 
-            var countryCounter;
+        let data = <?=$data?>
+       // let cat = data.map(s => s.Country);
+        console.log(data);
 
-            data = <?=$data?>
 
-            for (region in data) {
-                //console.log(region);
-                if (data.hasOwnProperty(region)) {
-                    regionVal = 0;
-                    regionP = {
-                        id: 'id_' + regionI,
-                        name: region,
-                        color: Highcharts.getOptions().colors[regionI]
-                    };
-
-                    countryI = 0;
-
-                    for (let countries in data[region]) {
-
-                        
-                        for (country in data[region][countries]) {
-
-                            countryP = {
-                                id: regionP.id + '_' + countryI,
-                                name: country,
-                                parent: regionP.id
-                            };
-
-                            points.push(countryP);
-                            causeI = 0;
-
-                            for (cause in data[region][countries][country]) {  
-                                causeP = {
-                                    id: countryP.id + '_' + causeI,
-                                    name: causeName[cause],
-                                    parent: countryP.id,
-                                    value: Math.round(+data[region][countries][country][cause])
-                                };
-                                regionVal += causeP.value;
-                                points.push(causeP);
-                                causeI = causeI + 1;
-                                console.log(causeP);
-                            }
-                            countryI = countryI + 1;
-                        }
-                    
-                    }
-                    regionP.value = Math.round(regionVal / countryI);
-                    points.push(regionP);
-                    regionI = regionI + 1;
-                }
-            }
-
-            Highcharts.chart('prueba', {
-            series: [{
-                type: 'treemap',
-                layoutAlgorithm: 'squarified',
-                allowDrillToNode: true,
-                animationLimit: 1000,
-                dataLabels: {
-                enabled: false
-                },
-                levelIsConstant: false,
-                levels: [{
-                level: 1,
-                dataLabels: {
-                    enabled: true
-                },
-                borderWidth: 3
-                }],
-                data: points
-            }],
-            subtitle: {
-                text: 'Haga click sobre los graficos para hacer drilldown.'
-            },
-            title: {
-                text: 'Cifras de COVID-19 en el Mundo'
-            }
-            });
+Highcharts.chart('container', {
+  chart: {
+    type: 'bar'
+  },
+  title: {
+    text: 'Historic World Population by Region'
+  },
+  subtitle: {
+    text: 'Source: <a href="https://en.wikipedia.org/wiki/World_population">Wikipedia.org</a>'
+  },
+  xAxis: {
+    categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania'],
+    title: {
+      text: null
+    }
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Population (millions)',
+      align: 'high'
+    },
+    labels: {
+      overflow: 'justify'
+    }
+  },
+  tooltip: {
+    valueSuffix: ' millions'
+  },
+  plotOptions: {
+    bar: {
+      dataLabels: {
+        enabled: true
+      }
+    }
+  },
+  // legend: {
+  //   layout: 'vertical',
+  //   align: 'right',
+  //   verticalAlign: 'top',
+  //   x: -40,
+  //   y: 80,
+  //   floating: true,
+  //   borderWidth: 1,
+  //   backgroundColor:
+  //     Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
+  //   shadow: true
+  // },
+  credits: {
+    enabled: false
+  },
+  series: [{
+    name: 'Year 1800',
+    data: [107,57, 100, 89 ,32]
+  }],
+});
 
 
         </script>

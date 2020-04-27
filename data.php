@@ -236,4 +236,43 @@ function getAcumulados_Region_Pais_Estados() {
     }
 }
 
+// **************************
+// CALCULO DE TASA DE LETALIDAD
+// **************************
+
+function getTasa_Letalidad_Paises() {
+    $date = getRecentDate();
+    $sql = "SELECT continentes.nombre AS Continent, confirmados.Country AS Country, 
+    ((
+    (SELECT fallecidos.Cases
+     FROM fallecidos 
+     WHERE confirmados.Country = fallecidos.Country AND
+     fallecidos.Date = '$date'
+    ) / confirmados.Cases) * 100) AS LetalityRate
+        FROM confirmados 
+        INNER JOIN continentes ON confirmados.Continent = continentes.codigo
+        WHERE confirmados.Date = '$date'
+        GROUP BY continentes.nombre, confirmados.Country
+        ORDER BY LetalityRate DESC";
+
+    $result = getDataset($sql);
+
+    if ($result->num_rows > 0) {
+
+       // $json = array();
+        while($row = $result->fetch_assoc()) {
+            $datos = array(
+                'name' => $row['Country'],
+                'data' => intval($row['LetalityRate'])
+            );
+
+           // $json = update_keypair($json, $region, $datos);
+        }
+
+        return json_encode($datos);
+
+    } else {
+        echo "No results";
+    }
+}
 ?> 
