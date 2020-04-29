@@ -253,20 +253,24 @@ function getTasa_Letalidad_Paises() {
         INNER JOIN continentes ON confirmados.Continent = continentes.codigo
         WHERE confirmados.Date = '$date'
         GROUP BY continentes.nombre, confirmados.Country
-        ORDER BY LetalityRate DESC";
+        ORDER BY LetalityRate DESC
+        LIMIT 25";
 
     $result = getDataset($sql);
 
     if ($result->num_rows > 0) {
 
-       // $json = array();
+       $datos = array();
         while($row = $result->fetch_assoc()) {
-            $datos = array(
+            $datos[] = array(
                 'name' => $row['Country'],
-                'data' => intval($row['LetalityRate'])
+                'data' => (float) ($row['LetalityRate'])
             );
+            // $datos[] = array(
+            //     $row['Country'],
+            //     (float) $row['LetalityRate']
+            // );
 
-           // $json = update_keypair($json, $region, $datos);
         }
 
         return json_encode($datos);

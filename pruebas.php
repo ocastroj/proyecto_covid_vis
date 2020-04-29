@@ -59,10 +59,24 @@
 
         <script type="text/javascript">
 
-        let data = <?=$data?>
-       // let cat = data.map(s => s.Country);
-        console.log(data);
+        let data = <?=$data?>;
+        let cat = data.map(d => d.name);
+        let datos = data.map(d => d.data);
+        let datos3 = {
+          name : 'Datos',
+          data : datos
+        };
+        let datos4 = [{
+          name : 'Datos',
+          data : datos
+        }];
 
+          datos2 = [{
+      name: 'Year 180',
+      data: [107,57, 100, 89 ,32]
+    }];
+  console.log(datos2);
+  console.log(datos4);
 
 Highcharts.chart('container', {
   chart: {
@@ -75,7 +89,7 @@ Highcharts.chart('container', {
     text: 'Source: <a href="https://en.wikipedia.org/wiki/World_population">Wikipedia.org</a>'
   },
   xAxis: {
-    categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania'],
+    categories: cat,
     title: {
       text: null
     }
@@ -115,10 +129,7 @@ Highcharts.chart('container', {
   credits: {
     enabled: false
   },
-  series: [{
-    name: 'Year 1800',
-    data: [107,57, 100, 89 ,32]
-  }],
+  series: datos4
 });
 
 
