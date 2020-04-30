@@ -59,37 +59,26 @@
 
         <script type="text/javascript">
 
-        let data = <?=$data?>;
-        let cat = data.map(d => d.name);
-        let datos = data.map(d => d.data);
-        let datos3 = {
-          name : 'Datos',
-          data : datos
-        };
-        let datos4 = [{
-          name : 'Datos',
-          data : datos
+        let let_data = <?=$data?>;
+        let let_cat = let_data.map(d => d.name);
+        let let_datos = [{
+            name : 'Datos',
+            data: let_data.map(d => d.data)
         }];
-
-          datos2 = [{
-      name: 'Year 180',
-      data: [107,57, 100, 89 ,32]
-    }];
-  console.log(datos2);
-  console.log(datos4);
 
 Highcharts.chart('container', {
   chart: {
-    type: 'bar'
+    type: 'bar',
+    height: 800
   },
   title: {
-    text: 'Historic World Population by Region'
+    text: 'Tasa de Letalidad'
   },
   subtitle: {
-    text: 'Source: <a href="https://en.wikipedia.org/wiki/World_population">Wikipedia.org</a>'
+    text: 'Top 25'
   },
   xAxis: {
-    categories: cat,
+    categories: let_cat,
     title: {
       text: null
     }
@@ -97,7 +86,7 @@ Highcharts.chart('container', {
   yAxis: {
     min: 0,
     title: {
-      text: 'Population (millions)',
+      text: 'Porcentaje %',
       align: 'high'
     },
     labels: {
@@ -105,12 +94,12 @@ Highcharts.chart('container', {
     }
   },
   tooltip: {
-    valueSuffix: ' millions'
+    valueSuffix: ' %'
   },
   plotOptions: {
     bar: {
       dataLabels: {
-        enabled: true
+        enabled: false
       }
     }
   },
@@ -129,7 +118,7 @@ Highcharts.chart('container', {
   credits: {
     enabled: false
   },
-  series: datos4
+  series: let_datos
 });
 
 

@@ -14,6 +14,9 @@
   // Datoset para Treemap
   $treemap_regiones = getAcumulados_Region_Pais_Estados();
 
+  // Dataset para Barras Horizontales - Tasa Letalidad
+  $bar_paises_letalidad = getTasa_Letalidad_Paises();
+
 ?>
 
 <!DOCTYPE HTML>
@@ -42,20 +45,22 @@
             <div class="container">
 
                 <!-- GRAFICOS DE LINEA -->
-                <h1>Graficos de Linea</h1>
+                <h1>NUMERO DE CASOS POR REGION (LINE)</h1>
                 <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure">
                             <div id="line-confirmados-region"></div>
                         </figure>
                     </div>
-
+                </div>
+                <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure">
                             <div id="line-fallecidos-region"></div>
                         </figure>
                     </div>
-
+                </div>
+                <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure">
                             <div id="line-recuperados-region"></div>
@@ -65,7 +70,7 @@
                 </div>
 
                 <!-- GRAFICOS DE PIE -->
-                <h1>Graficos de Pie</h1>
+                <h1>PAISES CON MAYOR CANTIDAD DE CASOS POR TIPO (PIE)</h1>
                 <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure-pie">
@@ -88,11 +93,21 @@
 
 
                 <!-- TREEMAP REGIONES -->
-                <h1>Grafico de Treemap</h1>
+                <h1>INFORMACION DE REGIONES (TREEMAP)</h1>
+                <div class="columns">
+                    <div class="column"> 
+                        <figure class="highcharts-figure">
+                            <div id="treemap-regiones"></div>
+                        </figure>
+                    </div> 
+                </div>  
+
+                <!-- BAR HORIZONTALES -->
+                <h1>TASA DE LETALIDAD - TOP 25 (BAR)</h1>
                 <div class="columns">
                     <div class="column">
                         <figure class="highcharts-figure">
-                            <div id="treemap-regiones"></div>
+                            <div id="bar-letalidad-paises"></div>
                         </figure>
                     </div> 
                 </div>  
@@ -459,7 +474,6 @@
             data = <?=$treemap_regiones?>
 
             for (region in data) {
-                //console.log(region);
                 if (data.hasOwnProperty(region)) {
                     regionVal = 0;
                     regionP = {
@@ -494,7 +508,6 @@
                                 regionVal += causeP.value;
                                 points.push(causeP);
                                 causeI = causeI + 1;
-                                console.log(causeP);
                             }
                             countryI = countryI + 1;
                         }
@@ -533,7 +546,59 @@
             }
             });
 
+            // ************************************
+            // BARRAS HORIZONTALES - TASA LETALIDAD
+            // ************************************ 
 
+            let let_data = <?=$bar_paises_letalidad?>;
+            let let_cat = let_data.map(d => d.name);
+            let let_datos = [{
+                name : 'Datos',
+                data: let_data.map(d => d.data)
+            }];
+
+            Highcharts.chart('bar-letalidad-paises', {
+            chart: {
+                type: 'bar',
+                height: 800
+            },
+            title: {
+                text: 'Tasa de Letalidad'
+            },
+            subtitle: {
+                text: 'Top 25'
+            },
+            xAxis: {
+                categories: let_cat,
+                title: {
+                text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                text: 'Porcentaje %',
+                align: 'high'
+                },
+                labels: {
+                overflow: 'justify'
+                }
+            },
+            tooltip: {
+                valueSuffix: ' %'
+            },
+            plotOptions: {
+                bar: {
+                dataLabels: {
+                    enabled: false
+                }
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            series: let_datos
+            });
 
 		</script>
 	</body>
