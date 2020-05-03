@@ -27,7 +27,6 @@
         <title>Proyecto Cenfotec - Vis COVID-19</title>
         <link rel="stylesheet" href="css/style.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
-        <script src="js/charts.js"></script>
         
 	</head>
 	<body>
@@ -37,8 +36,8 @@
         <script src="code/modules/exporting.js"></script>
         <script src="code/modules/export-data.js"></script>
         <script src="code/modules/accessibility.js"></script>
-        <script src="/code/modules/heatmap.js"></script>
-        <script src="/code/modules/treemap.js"></script>
+        <script src="code/modules/heatmap.js"></script>
+        <script src="code/modules/treemap.js"></script>
         <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
         <section class="section">

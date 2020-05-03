@@ -279,4 +279,45 @@ function getTasa_Letalidad_Paises() {
         echo "No results";
     }
 }
+
+
+// **************************
+// DATOS PARA GRAFICO D3
+// **************************
+
+function getResumenRegiones() {
+    $date = getRecentDate();
+    $sql = "SELECT continentes.nombre as Continent, SUM(confirmados.Cases) as Confirmed,
+    (SELECT SUM(fallecidos.Cases) FROM fallecidos WHERE fallecidos.Continent = confirmados.Continent
+     AND fallecidos.Date = '$date') as Deceased,
+    (SELECT SUM(recuperados.Cases) FROM recuperados WHERE recuperados.Continent = confirmados.Continent
+     AND recuperados.Date = '$date') as Recovered
+    FROM confirmados 
+    INNER JOIN continentes ON confirmados.Continent = continentes.codigo
+    WHERE confirmados.Date = '$date'
+    GROUP BY continentes.nombre";
+
+    $result = getDataset($sql);
+
+    if ($result->num_rows > 0) {
+
+       $datos = array();
+        while($row = $result->fetch_assoc()) {
+            $datos[] = array(
+                'key' => $row['Continent'],
+                'values' => array(
+                    array('grpName' => 'confirmados','grpValue' => intval($row['Confirmed'])),
+                    array('grpName' => 'fallecidos','grpValue' => intval($row['Deceased'])),
+                    array('grpName' => 'recuperados','grpValue' => intval($row['Recovered']))
+                )  
+            );
+        }
+
+        return json_encode($datos);
+
+    } else {
+        echo "No results";
+    }
+}
+
 ?> 
